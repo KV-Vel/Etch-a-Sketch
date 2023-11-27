@@ -1,9 +1,10 @@
 const container = document.querySelector('.container');
-// Default Size for grid
-let gridSize = 16;
-let containerSize = 500;
+
+let gridSize = 48;
+let containerSize = 700;
 
 document.addEventListener ('DOMContentLoaded', createGrid);
+
 
 //Canceling drag and drop to prevent block icon to appear during drawing
 document.body.addEventListener('dragstart', event => {
@@ -19,8 +20,7 @@ function calculateGrid () {
     divBlock.forEach ((element) => {
         element.style.cssText = 
         `height: ${result}px;
-         width: ${result}px;
-         border: 1px solid;`
+         width: ${result}px;`
     })
 }
 
@@ -55,8 +55,3 @@ container.addEventListener('mousedown', (e) => {
         enableDraw = false;
     })
 });
-
-// После того как получится рисовать, пуш
-// https://stackoverflow.com/questions/71978770/why-is-my-cursor-turning-into-a-block-icon-on-mousedown
-
-
