@@ -1,7 +1,8 @@
 const container = document.querySelector('.container');
-
-let gridSize = 48;
-let containerSize = 700;
+const clearBtn = document.querySelector('.clear-btn');
+const functionsDiv = document.querySelector('.functions');
+let gridSize = 32;
+let containerSize = 700; 
 
 document.addEventListener ('DOMContentLoaded', createGrid);
 
@@ -40,13 +41,13 @@ function createGrid () {
 container.addEventListener('mousedown', (e) => {
     let enableDraw = true;
     let targetBlock = e.target;
-    if (targetBlock.tagName == 'DIV' && enableDraw === true) {
+    if (targetBlock.className == 'child-container' && enableDraw === true) {
         targetBlock.style.cssText += 'background: black;';
     }
 
     container.addEventListener('mouseover', (e) => {
     let targetBlock = e.target;                                  
-    if (targetBlock.tagName == 'DIV' && enableDraw === true) {
+    if (targetBlock.className == 'child-container' && enableDraw === true) {
         targetBlock.style.cssText += 'background: black;';
     }
     })
@@ -55,3 +56,13 @@ container.addEventListener('mousedown', (e) => {
         enableDraw = false;
     })
 });
+//TO DO: when mouse leaves container stop drawing
+
+clearBtn.addEventListener('click', clear)
+
+function clear () {
+    const divBlock = document.querySelectorAll('.child-container');
+    divBlock.forEach ((element) => {
+        element.style.cssText += 'background: white'
+    })
+}
