@@ -10,6 +10,8 @@
     --font-color: rgb(223, 223, 223);
     --background-color: #8b1fa3;
     --secondary-background-colors: #561166;
+    --ON: initial;
+    --OFF: ;
 }
 
 /* || General Styles */
@@ -33,7 +35,7 @@ main {
     align-items: center;
 }
 
-button {
+.btn {
     margin-bottom: 5px;
     
     font-size: 1rem;
@@ -45,6 +47,8 @@ button {
     color: white;
     box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
 }
+
+/*Check FrontEnd 2023 Conference about variables toggle button*/
 
 input {
     width: 100%;
@@ -149,6 +153,12 @@ input[type="color" i] {
     animation: movingcolor .7s;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+}
+
+.active {
+    color: #ffffff; 
+    background-color: white;
+    color: black;
 }
 
 @keyframes movingcolor {
