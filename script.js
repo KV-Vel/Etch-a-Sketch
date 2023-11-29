@@ -87,7 +87,3 @@ function clear () {
 inputColor.addEventListener('input', getColor);
 
 function getColor (e) {color = e.target.value;}
-
-// HTML - added active style for toggling eraser and changed button styling to class .btn to make it more specific than .active class
-// CSS - added styling for active eraser
-// JS - added logic for input color to choose which color to draw, added logic for eraser button.
