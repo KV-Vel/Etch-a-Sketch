@@ -3,11 +3,10 @@ const clearBtn = document.querySelector('.clear-btn');
 const functionsDiv = document.querySelector('.functions');
 const eraserBtn = document.querySelector('.eraser');
 const inputColor = document.querySelector('#color-change');
+const inputRange = document.querySelector('#size-grid');
+const output = document.querySelector('.out');
 let erasePermission = 'OFF';
 let color = 'black';
-let gridSize = 32;
-let containerSize = 700; 
-
 document.addEventListener ('DOMContentLoaded', createGrid);
 
 
@@ -20,8 +19,10 @@ document.body.addEventListener('dragstart', event => {
   });
 
 function calculateGrid () {
-    const divBlock = document.querySelectorAll('.child-container');
+    let gridSize = inputRange.value;
+    const containerSize = 700; 
     let result = containerSize / gridSize;
+    const divBlock = document.querySelectorAll('.child-container');
     divBlock.forEach ((element) => {
         element.style.cssText = 
         `height: ${result}px;
@@ -30,8 +31,8 @@ function calculateGrid () {
 }
 
 function createGrid () {
-    for (let horizontalDivs = 1; horizontalDivs<=gridSize; horizontalDivs++){
-        for (let verticalDivs = 1; verticalDivs<=gridSize; verticalDivs++) {
+    for (let horizontalDivs = 1; horizontalDivs<=inputRange.value; horizontalDivs++){
+        for (let verticalDivs = 1; verticalDivs<=inputRange.value; verticalDivs++) {
             const childContainer = document.createElement('div');               
             childContainer.classList.add('child-container');
             childContainer.setAttribute('draggable', false);
@@ -39,6 +40,7 @@ function createGrid () {
         }
     }
     calculateGrid()
+    showGridSize()
 }
 
 // Makes first div black on mousedown
@@ -87,3 +89,13 @@ function clear () {
 inputColor.addEventListener('input', getColor);
 
 function getColor (e) {color = e.target.value;}
+
+inputRange.addEventListener('input', showGridSize);
+
+function showGridSize () {
+    let size = inputRange.value;
+    output.textContent = `${size} x ${size}`; //To make it look (16 x 16)
+}
+
+inputRange.addEventListener('change', createGrid)
+
