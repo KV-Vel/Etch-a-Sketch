@@ -5,12 +5,14 @@ const eraserBtn = document.querySelector('.eraser');
 const inputColor = document.querySelector('#color-change');
 const inputRange = document.querySelector('#size-grid');
 const output = document.querySelector('.out');
-let erasePermission = 'OFF';
-let color = 'black';
+const rainbowModeBtn = document.querySelector('.rainbow');
+//Equals to inputColor btn value so that after erase color would save 
+let color = inputColor.value; 
 document.addEventListener ('DOMContentLoaded', createGrid);
+//Variable to control event listener for Rainbow color mode
+let allow;  
 
-
-//Canceling drag and drop to prevent block icon to appear during drawing
+//Canceling drag and drop to prevent block icon to appear during drawing with left mouse pressed
 document.body.addEventListener('dragstart', event => {
     event.preventDefault();
   });
@@ -20,6 +22,7 @@ document.body.addEventListener('dragstart', event => {
 
 function calculateGrid () {
     let gridSize = inputRange.value;
+    //Size of the 'canvas'
     const containerSize = 700; 
     let result = containerSize / gridSize;
     const divBlock = document.querySelectorAll('.child-container');
@@ -42,7 +45,6 @@ function createGrid () {
     calculateGrid()
     showGridSize()
 }
-
 // Makes first div black on mousedown
 container.addEventListener('mousedown', (e) => {
     let enableDraw = true;
@@ -62,18 +64,20 @@ container.addEventListener('mousedown', (e) => {
         enableDraw = false;
     })
 });
-//TO DO: when mouse leaves container stop drawing
 
 eraserBtn.addEventListener('click', erase);
 
 function erase (e) {
-    if (e.target.classList.toggle('active')) {
-        e.target.textContent = 'Eraser is ON';
-        color = `#ffffff`;
+    if (e.target.className === 'btn eraser') {
+        e.target.classList.toggle('active');
+        // Removing active rainbow mode class if eraser is turned ON
+        e.target.textContent = 'Eraser is ON';    
+        color = 'white';
+        rainbowModeBtn.className = 'btn rainbow';
     } else {
         e.target.textContent = 'Eraser is OFF';
-        e.target.classList.toggle('eraser');
-        color = `#000`;
+        e.target.className = 'btn eraser';
+        color = inputColor.value;        
     }
 }
 
@@ -83,19 +87,70 @@ function clear () {
     const divBlock = document.querySelectorAll('.child-container');
     divBlock.forEach ((element) => {
         element.style.cssText += 'background: white';
+        color = inputColor.value;
     })
 }
 
 inputColor.addEventListener('input', getColor);
 
-function getColor (e) {color = e.target.value;}
+function getColor (e) {
+    //Check if eraser button not clicked while choosing color.
+    if (eraserBtn.textContent === 'Eraser is ON') { 
+        eraserBtn.className = 'btn eraser';
+        eraserBtn.textContent = 'Eraser is OFF';
+        color = e.target.value; //Retrive color from input[color]
+    } else {
+        color = e.target.value;
+    }
+}
 
 inputRange.addEventListener('input', showGridSize);
 
 function showGridSize () {
     let size = inputRange.value;
-    output.textContent = `${size} x ${size}`; //To make it look (16 x 16)
+    //To make it look (16 x 16)
+    output.textContent = `${size} x ${size}`; 
 }
 
 inputRange.addEventListener('change', createGrid)
 
+rainbowModeBtn.addEventListener('click', getControl);
+
+function getRandomColor () {
+    
+
+        /* Getting 3 random RGB */
+        let arrayOfRgb = [];
+        for (let i = 1; i<=3; i++) {
+            let rand = Math.floor(Math.random() * 255) + 1;
+            arrayOfRgb.push(rand);
+        }
+        let [R, G, B] = arrayOfRgb;
+        color = `rgb(${R}, ${G}, ${B})`;
+        
+        /* When rainbowmode activated it generates new color on each div(Cell) */
+        if (allow === true && eraserBtn.textContent === 'Eraser is OFF') {
+            container.addEventListener('mousemove', getRandomColor);
+            rainbowModeBtn.className = 'btn rainbow rainbow-active'; //Setting css style when button is active
+        } else if (eraserBtn.textContent === 'Eraser is ON') {
+            container.removeEventListener('mousemove', getRandomColor);
+            color = 'white';
+        } else {
+            container.removeEventListener('mousemove', getRandomColor);
+            color = inputColor.value;
+        }
+        
+}
+
+function getControl () {
+    if (rainbowModeBtn.className === 'btn rainbow') {
+        allow = true;
+        getRandomColor()
+    } else {
+        allow = false;
+        rainbowModeBtn.className = 'btn rainbow';
+    }
+}
+
+
+//TO DO: when mouse leaves container stop drawing
