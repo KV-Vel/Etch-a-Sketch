@@ -170,8 +170,13 @@ input[type="color" i] {
     animation-direction: alternate;
 }
 
+.rainbow-active {
+    animation: movingcolor .7s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
 .active {
-    color: #ffffff; 
     background-color: white;
     color: black;
 }
