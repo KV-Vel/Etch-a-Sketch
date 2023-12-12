@@ -67,6 +67,10 @@ label {
     width: 100%;
 }
 
+.darkening-activate {
+    background: black;
+}
+
 span {
     height: 5px;
     width: 2px;
