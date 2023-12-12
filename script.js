@@ -1,16 +1,19 @@
+const body = document.querySelector('body');
 const container = document.querySelector('.container');
 const clearBtn = document.querySelector('.clear-btn');
 const functionsDiv = document.querySelector('.functions');
+const darkeningModeBtn = document.querySelector('.darkening');
 const eraserBtn = document.querySelector('.eraser');
 const inputColor = document.querySelector('#color-change');
 const inputRange = document.querySelector('#size-grid');
 const output = document.querySelector('.out');
 const rainbowModeBtn = document.querySelector('.rainbow');
+const childContainer = document.querySelectorAll('.child-container');
 //Equals to inputColor btn value so that after erase color would save 
 let color = inputColor.value; 
 document.addEventListener ('DOMContentLoaded', createGrid);
 //Variable to control event listener for Rainbow color mode
-let allow;  
+let allow;
 
 //Canceling drag and drop to prevent block icon to appear during drawing with left mouse pressed
 document.body.addEventListener('dragstart', event => {
@@ -40,39 +43,45 @@ function createGrid () {
             childContainer.classList.add('child-container');
             childContainer.setAttribute('draggable', false);
             container.appendChild(childContainer);
+            
         }
     }
     calculateGrid()
     showGridSize()
 }
-// Makes first div black on mousedown
+
 container.addEventListener('mousedown', (e) => {
-    let enableDraw = true;
-    let targetBlock = e.target;
-    if (targetBlock.className == 'child-container' && enableDraw === true) {
-        targetBlock.style.cssText += `background: ${color};`;
-    }
+    // Makes first div black on mousedown
+    draw(e)
+    container.addEventListener('mouseover', draw);
+}) 
 
-    container.addEventListener('mouseover', (e) => {
+container.addEventListener('mouseup', () => {
+    container.removeEventListener('mouseover', draw);
+})
+
+body.addEventListener('mouseout', (e) => {
+    if(e.target.className != 'child-container') {
+        container.removeEventListener('mouseover', draw);
+    }
+})
+
+function draw (e) {
+    
     let targetBlock = e.target;                                  
-    if (targetBlock.className == 'child-container' && enableDraw === true) {
+    if (targetBlock.className == 'child-container') {
         targetBlock.style.cssText += `background: ${color};`;
     }
-    })
-
-    container.addEventListener('mouseup', () => {
-        enableDraw = false;
-    })
-});
+}
 
 eraserBtn.addEventListener('click', erase);
 
 function erase (e) {
-    if (e.target.className === 'btn eraser') {
+    if (e.target.className === 'btn eraser' && darkeningModeBtn.style.backgroundColor != 'black') {
         e.target.classList.toggle('active');
         // Removing active rainbow mode class if eraser is turned ON
         e.target.textContent = 'Eraser is ON';    
-        color = 'white';
+        color = '#ffffff';
         rainbowModeBtn.className = 'btn rainbow';
     } else {
         e.target.textContent = 'Eraser is OFF';
@@ -86,9 +95,12 @@ clearBtn.addEventListener('click', clear)
 function clear () {
     const divBlock = document.querySelectorAll('.child-container');
     divBlock.forEach ((element) => {
-        element.style.cssText += 'background: white';
+        element.style.cssText += 'background: #ffffff';
         color = inputColor.value;
     })
+    if (eraserBtn.textContent === 'Eraser is ON') {
+        color = '#ffffff';
+    }
 }
 
 inputColor.addEventListener('input', getColor);
@@ -109,16 +121,19 @@ inputRange.addEventListener('input', showGridSize);
 function showGridSize () {
     let size = inputRange.value;
     //To make it look (16 x 16)
-    output.textContent = `${size} x ${size}`; 
+    output.textContent = `${size} x ${size}`;
 }
 
-inputRange.addEventListener('change', createGrid)
+inputRange.addEventListener('change', () => {
+    while(container.firstChild) {
+        container.removeChild(container.lastChild);
+    }
+    createGrid()
+})
 
 rainbowModeBtn.addEventListener('click', getControl);
 
 function getRandomColor () {
-    
-
         /* Getting 3 random RGB */
         let arrayOfRgb = [];
         for (let i = 1; i<=3; i++) {
@@ -129,13 +144,18 @@ function getRandomColor () {
         color = `rgb(${R}, ${G}, ${B})`;
         
         /* When rainbowmode activated it generates new color on each div(Cell) */
-        if (allow === true && eraserBtn.textContent === 'Eraser is OFF') {
+        if (allow === true && eraserBtn.textContent === 'Eraser is OFF' && darkeningModeBtn.style.backgroundColor != 'black') {
+            container.addEventListener('click', getRandomColor); 
             container.addEventListener('mousemove', getRandomColor);
             rainbowModeBtn.className = 'btn rainbow rainbow-active'; //Setting css style when button is active
-        } else if (eraserBtn.textContent === 'Eraser is ON') {
+        } 
+        else if (eraserBtn.textContent === 'Eraser is ON') {
+            container.removeEventListener('click', getRandomColor);
             container.removeEventListener('mousemove', getRandomColor);
-            color = 'white';
-        } else {
+            color = '#ffffff';
+        } 
+        else {
+            container.removeEventListener('click', getRandomColor);
             container.removeEventListener('mousemove', getRandomColor);
             color = inputColor.value;
         }
@@ -152,5 +172,32 @@ function getControl () {
     }
 }
 
+darkeningModeBtn.addEventListener('click', darkeningEffect)
+function darkeningEffect () {
+    if (darkeningModeBtn.style.backgroundColor === 'black') {
+        darkeningModeBtn.style.cssText += 'background-color: #561166;';
+        container.removeEventListener('click', retrieveRgb);
+        container.removeEventListener('mouseover', retrieveRgb);
+        color = inputColor.value;
+    }
+    else if (rainbowModeBtn.className === 'btn rainbow' && eraserBtn.textContent === 'Eraser is OFF') {
+        darkeningModeBtn.style.cssText += 'background-color: black;';
+        container.addEventListener('click', retrieveRgb);
+        container.addEventListener('mouseover', retrieveRgb);
+    } 
+}
 
-//TO DO: when mouse leaves container stop drawing
+function retrieveRgb (e) {
+    if (e.target.style.background === '') {
+        e.target.style.background = 'rgb(255,255,255)';
+        rgb(255,255,255); // Otherwise blank cells = ''
+    } else {
+        let result = []
+        result = e.target.style.background.substring(4, e.target.style.background.length -1).split(',');
+        rgb(result[0],result[1], result[2])
+    }
+}
+
+function rgb(r,g,b) {
+   color = `rgb(${r-15}, ${g-15}, ${b-15})`;
+}
